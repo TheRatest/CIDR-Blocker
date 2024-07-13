@@ -1,22 +1,22 @@
 <p align="center">
-	<img alt="CIDR Blocker" src="assets/img/CIDR_Blocker.png" height="250" width="250">
+	<img alt="CIDR Blocker" src="https://github.com/CIDR-Blocker/CIDR-Blocker/blob/master/assets/img/CIDR_Blocker.png?raw=true" height="250" width="250">
 </p>
 
 <p align="center">
 	Blocks CIDR (Classless Inter-Domain Routing) IP Ranges
 </p>
 
-<p align="center">
-	<a href="https://travis-ci.org/CIDR-Blocker/CIDR-Blocker"><img alt="Travis CI Status" src="https://img.shields.io/travis/CIDR-Blocker/CIDR-Blocker.svg?style=flat-square"></a>
-	<a href="https://github.com/CIDR-Blocker/CIDR-Blocker/issues"><img alt="Issues" src="https://img.shields.io/github/issues/CIDR-Blocker/CIDR-Blocker.svg?style=flat-square"></a>
-	<img alt="Downloads" src="https://img.shields.io/github/downloads/CIDR-Blocker/CIDR-Blocker/total.svg?style=flat-square">
-</p>
-
 ---
+
+# Console Commands
+
+- **sm_cidr_ban <ip> <ban reason> <comment>** Ban a CIDR (Example: `sm_cidr_ban "89.108.121.0/24" "Blocked IP" "Reg.ru"`)
+- **sm_cidr_ban <ip> <ban reason> <comment>** Unban a CIDR (Example: `sm_cidr_unban "89.108.121.0/24"`)
+- **sm_cidr_whitelist <ip/steamid2> <comment>** Ban a CIDR (Example: `sm_cidr_whitelist "89.108.121.120" "Exception for me because i said so"` or `sm_cidr_whitelist "STEAM_0:1:522065531"`)
 
 # ConVar
 
-- **sm_cidr_log** Enable blocked logging [Default: **1.0**] (Min: **0.0**) (Max: **1.0**)
+- **sm_cidr_log** Enable blocked logging [Default: **0.0**] (Min: **0.0**) (Max: **1.0**)
 
 # Database Structure
 

@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma semicolon 1
 
 #define PLUGIN_AUTHOR "Fishy"
-#define PLUGIN_VERSION "1.2.0"
+#define PLUGIN_VERSION "1.2.1"
 
 #define LIST_CREATE_SQL "CREATE TABLE IF NOT EXISTS `cidr_list` ( `id` INT NOT NULL AUTO_INCREMENT , `cidr` VARCHAR(32) NOT NULL UNIQUE , `kick_message` VARCHAR(64) NOT NULL DEFAULT 'IP BLOCKED' , `comment` VARCHAR(255) NULL , PRIMARY KEY (`id`), INDEX (`cidr`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;"
 #define WHITELIST_CREATE_SQL "CREATE TABLE IF NOT EXISTS `cidr_whitelist` ( `id` INT NOT NULL AUTO_INCREMENT , `type` ENUM('steam','ip') NOT NULL , `identity` VARCHAR(32) NOT NULL , `comment` VARCHAR(255) NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;"
@@ -72,11 +72,13 @@ public void OnPluginStart()
 
 	CreateConVar("sm_cidr_version", PLUGIN_VERSION, "CIDR Blocker Version", FCVAR_REPLICATED | FCVAR_SPONLY | FCVAR_DONTRECORD | FCVAR_NOTIFY);
 	
-	cLog = CreateConVar("sm_cidr_log", "1", "Enable blocked logging", FCVAR_NONE, true, 0.0, true, 1.0);
+	cLog = CreateConVar("sm_cidr_log", "0", "Enable blocked logging", FCVAR_NONE, true, 0.0, true, 1.0);
 	
 	Log = cLog.BoolValue;
 	cLog.AddChangeHook(OnLogChange);
 	
+	RegAdminCmd("sm_cidr_ban", CmdBan, ADMFLAG_BAN);
+	RegAdminCmd("sm_cidr_unban", CmdUnban, ADMFLAG_BAN);
 	RegAdminCmd("sm_cidr_whitelist", CmdWhitelist, ADMFLAG_CHEATS);
 
 	Whitelist = new ArrayList(sizeof(WhitelistEntry));
@@ -181,6 +183,48 @@ public void SQL_OnCIDRFetch(Database db, DBResultSet results, const char[] error
 	}
 }
 
+public Action CmdBan(int client, int args)
+{
+	if (args < 1)
+	{
+		ReplyToCommand(client, "sm_cidr_ban <ip> <ban reason> <comment>");
+		return Plugin_Handled;
+	}
+	
+	char IP[64], BanReason[256], Comment[256], Insert_Query[1024];
+	
+	GetCmdArg(1, IP, 64);
+	if(args >= 2)
+		GetCmdArg(2, BanReason, 256);
+	if(args >= 3)
+		GetCmdArg(3, Comment, 256);
+	
+	hDB.Format(Insert_Query, sizeof Insert_Query, "INSERT INTO `cidr_list` (`cidr`, `kick_reason`, `comment`) VALUES ('%s', '%s', '%s')", IP, BanReason, Comment);
+	
+	hDB.Query(SQL_OnCmdBan, Insert_Query);
+	
+	return Plugin_Handled;
+}
+
+public Action CmdUnban(int client, int args)
+{
+	if (args < 1)
+	{
+		ReplyToCommand(client, "sm_cidr_unban <ip>");
+		return Plugin_Handled;
+	}
+	
+	char IP[64], Delete_Query[1024];
+	
+	GetCmdArg(1, IP, 64);
+	
+	hDB.Format(Delete_Query, sizeof Delete_Query, "DELETE FROM `cidr_list` WHERE `cidr` = '%s';", IP);
+	
+	hDB.Query(SQL_OnCmdUnban, Delete_Query);
+	
+	return Plugin_Handled;
+}
+
 public Action CmdWhitelist(int client, int args)
 {
 	if (args < 1)
@@ -208,13 +252,28 @@ public Action CmdWhitelist(int client, int args)
 	return Plugin_Handled;
 }
 
+public void SQL_OnCmdBan(Database db, DBResultSet results, const char[] error, any pData)
+{
+	if (results == null)
+		LogError("Failed to insert ban: %s", error); 
+	else
+		LogMessage("Banned CIDR"); 
+}
+
+public void SQL_OnCmdUnban(Database db, DBResultSet results, const char[] error, any pData)
+{
+	if (results == null)
+		LogError("Failed to remove ban: %s", error); 
+	else
+		LogMessage("Unbanned CIDR"); 
+}
+
 public void SQL_OnCmdWhitelist(Database db, DBResultSet results, const char[] error, any pData)
 {
 	if (results == null)
-	{
 		LogError("Failed to insert whitelist: %s", error); 
-		return;
-	}
+	else
+		LogMessage("Whitelisted user"); 
 }
 
 void LogReject(int client, const char[] CIDR)
