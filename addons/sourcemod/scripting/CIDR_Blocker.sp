@@ -19,13 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma semicolon 1
 
 #define PLUGIN_AUTHOR "Fishy"
-#define PLUGIN_VERSION "1.1.7"
+#define PLUGIN_VERSION "1.2.0"
 
 #define LIST_CREATE_SQL "CREATE TABLE IF NOT EXISTS `cidr_list` ( `id` INT NOT NULL AUTO_INCREMENT , `cidr` VARCHAR(32) NOT NULL UNIQUE , `kick_message` VARCHAR(64) NOT NULL DEFAULT 'IP BLOCKED' , `comment` VARCHAR(255) NULL , PRIMARY KEY (`id`), INDEX (`cidr`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;"
 #define WHITELIST_CREATE_SQL "CREATE TABLE IF NOT EXISTS `cidr_whitelist` ( `id` INT NOT NULL AUTO_INCREMENT , `type` ENUM('steam','ip') NOT NULL , `identity` VARCHAR(32) NOT NULL , `comment` VARCHAR(255) NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;"
 #define LOG_CREATE_SQL "CREATE TABLE IF NOT EXISTS `cidr_log` ( `id` INT NOT NULL AUTO_INCREMENT , `ip` VARBINARY(16) NOT NULL , `steamid` VARCHAR(32) NOT NULL , `name` VARCHAR(64) NOT NULL , `cidr` VARCHAR(32) NOT NULL , `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`), INDEX (`steamid`), INDEX (`ip`), INDEX (`cidr`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;"
 
 #include <sourcemod>
+#include <sourcebanspp.inc>
 
 #pragma newdecls required
 
@@ -51,7 +52,7 @@ ConVar cLog;
 
 public Plugin myinfo = 
 {
-	name = "CIDR Blocker",
+	name = "CIDR Blocker (SB++ Patch)",
 	author = PLUGIN_AUTHOR,
 	description = "Blocks CIDR (Classless Inter-Domain Routing) IP Ranges",
 	version = PLUGIN_VERSION,
@@ -176,7 +177,7 @@ public void SQL_OnCIDRFetch(Database db, DBResultSet results, const char[] error
 		results.FetchString(1, Kick_Message, sizeof Kick_Message);
 		
 		LogReject(pData, CIDR);
-		KickClient(pData, Kick_Message);
+		SBPP_BanPlayer(0, pData, 0, Kick_Message);
 	}
 }
 
