@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma semicolon 1
 
 #define PLUGIN_AUTHOR "Fishy"
-#define PLUGIN_VERSION "1.2.1"
+#define PLUGIN_VERSION "1.2.2"
 
 #define LIST_CREATE_SQL "CREATE TABLE IF NOT EXISTS `cidr_list` ( `id` INT NOT NULL AUTO_INCREMENT , `cidr` VARCHAR(32) NOT NULL UNIQUE , `kick_message` VARCHAR(64) NOT NULL DEFAULT 'IP BLOCKED' , `comment` VARCHAR(255) NULL , PRIMARY KEY (`id`), INDEX (`cidr`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;"
 #define WHITELIST_CREATE_SQL "CREATE TABLE IF NOT EXISTS `cidr_whitelist` ( `id` INT NOT NULL AUTO_INCREMENT , `type` ENUM('steam','ip') NOT NULL , `identity` VARCHAR(32) NOT NULL , `comment` VARCHAR(255) NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;"
@@ -199,7 +199,7 @@ public Action CmdBan(int client, int args)
 	if(args >= 3)
 		GetCmdArg(3, Comment, 256);
 	
-	hDB.Format(Insert_Query, sizeof Insert_Query, "INSERT INTO `cidr_list` (`cidr`, `kick_reason`, `comment`) VALUES ('%s', '%s', '%s')", IP, BanReason, Comment);
+	hDB.Format(Insert_Query, sizeof Insert_Query, "INSERT INTO `cidr_list` (`cidr`, `kick_message`, `comment`) VALUES ('%s', '%s', '%s')", IP, BanReason, Comment);
 	
 	hDB.Query(SQL_OnCmdBan, Insert_Query);
 	
