@@ -10,9 +10,9 @@
 
 # Console Commands
 
-- **sm_cidr_ban <ip> <ban reason> <comment>** Ban a CIDR (Example: `sm_cidr_ban "89.108.121.0/24" "Blocked IP" "Reg.ru"`)
-- **sm_cidr_ban <ip> <ban reason> <comment>** Unban a CIDR (Example: `sm_cidr_unban "89.108.121.0/24"`)
-- **sm_cidr_whitelist <ip/steamid2> <comment>** Ban a CIDR (Example: `sm_cidr_whitelist "89.108.121.120" "Exception for me because i said so"` or `sm_cidr_whitelist "STEAM_0:1:522065531"`)
+- **sm_cidr_ban \<ip> \<ban reason\> \<comment\>** Ban a CIDR (Example: `sm_cidr_ban "89.108.121.0/24" "Blocked IP" "Reg.ru"`)
+- **sm_cidr_ban \<ip> \<ban reason\> \<comment\>** Unban a CIDR (Example: `sm_cidr_unban "89.108.121.0/24"`)
+- **sm_cidr_whitelist \<ip/steamid2\> \<comment\>** Ban a CIDR (Example: `sm_cidr_whitelist "89.108.121.120" "Exception for me because i said so"` or `sm_cidr_whitelist "STEAM_0:1:522065531"`)
 
 # ConVar
 
